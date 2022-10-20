@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "278287507199",
+    "project_id": "centraldealuminiosdelvalle",
+    "storage_bucket": "centraldealuminiosdelvalle.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278287507199:android:35f487c257ad91f067b6ca",
+        "android_client_info": {
+          "package_name": "co.devpaul.barcode_generator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278287507199-dtugsjjd58l9adisp8s1us5q9o460g63.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt0oaRNmA-MY0ElM4AYY8tLE7sUPXh1bU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278287507199-dtugsjjd58l9adisp8s1us5q9o460g63.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "278287507199-23j0a87gf0gui43qdje39hq42l4poq6r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.barcodeGenerator"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
