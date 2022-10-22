@@ -1,9 +1,11 @@
-import 'dart:html';
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:barcode_generator/services/barcode_services.dart';
 import 'package:barcode_generator/shared/custom_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,14 +24,14 @@ class HomePage extends StatelessWidget {
               CustomButton(
                 text: 'Descargar Plantilla',
                 onPressed: () {
-                  const String url =
-                      'https://docs.google.com/spreadsheets/d/1sd8sU_i2aoj2vFHADu6j0_kyNWGD0zt_/edit?usp=sharing&ouid=113850207277339374301&rtpof=true&sd=true';
-                  AnchorElement anchorElement = AnchorElement(href: url);
-                  anchorElement.download = 'url';
-                  document.body?.append(anchorElement);
-                  anchorElement.click();
+                  // const String url =
+                  //     'https://docs.google.com/spreadsheets/d/1sd8sU_i2aoj2vFHADu6j0_kyNWGD0zt_/edit?usp=sharing&ouid=113850207277339374301&rtpof=true&sd=true';
+                  // AnchorElement anchorElement = AnchorElement(href: url);
+                  // anchorElement.download = 'url';
+                  // document.body?.append(anchorElement);
+                  // anchorElement.click();
 
-                  anchorElement.remove();
+                  // anchorElement.remove();
                 },
                 icon: Icons.cloud_download,
                 width: 220,
@@ -41,24 +43,41 @@ class HomePage extends StatelessWidget {
               CustomButton(
                 text: 'Cargar Plantilla',
                 onPressed: () async {
-                  FilePickerResult? result;
-                  try {
-                    result = await FilePicker.platform.pickFiles(
-                      type: FileType.custom,
-                      allowedExtensions: ['xls', 'xlsx'],
-                    );
-                  } catch (e) {
-                    print(e);
-                  }
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles();
 
                   if (result != null) {
-                    try {
-                      Uint8List uploadfile = result.files.single.bytes!;
-                      print(uploadfile);
-                    } catch (e) {
-                      print(e);
-                    }
+                    File file = File(result.files.single.path!);
+                    print(result.files.single.path);
+                    BarcodeServices.getBarcodeListPdf(file);
+                  } else {
+                    // User canceled the picker
                   }
+                  // FilePickerResult? result;
+                  // try {
+                  //   result = await FilePicker.platform.pickFiles(
+                  //     type: FileType.custom,
+                  //     allowedExtensions: ['xls', 'xlsx'],
+                  //   );
+                  // } catch (e) {
+                  //   print(e);
+                  // }
+
+                  // if (result != null) {
+                  //   try {
+                  //     // final PlatformFile tola = result.files[0];
+                  //     Uint8List uploadfile = result.files.single.bytes!;
+
+                  //     final tempDir = await getTemporaryDirectory();
+                  //     print('TOLA');
+                  //     print(result.files.single.path);
+                  //     // File file =
+                  //     //     await File('${tempDir.path}/Template.xlsx').create();
+                  //     // file.writeAsBytesSync(uploadfile);
+                  // } catch (e) {
+                  //   print(e);
+                  // }
+                  // }
                 },
                 icon: Icons.cloud_upload_rounded,
                 width: 220,
