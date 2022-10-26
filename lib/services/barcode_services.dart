@@ -4,39 +4,44 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
 class BarcodeServices {
-  static Future<bool> getBarcodeListPdf(PlatformFile fileToSend) async {
-    final request = http.MultipartRequest(
-      "POST",
-      Uri.parse("http://127.0.0.1:5050/api/upload-excel-file"),
-    );
+  static Future<void> getBarcodeListPdf() async {
+    FilePickerResult? resultFile =
+        await FilePicker.platform.pickFiles(withReadStream: true);
 
-    request.files.add(http.MultipartFile(
-        'file', fileToSend.readStream!, fileToSend.size,
-        filename: fileToSend.name));
+    if (resultFile != null) {
+      final PlatformFile fileToSend = resultFile.files.single;
+      final request = http.MultipartRequest(
+        "POST",
+        Uri.parse("http://127.0.0.1:5050/api/upload-excel-file"),
+      );
 
-    final http.StreamedResponse resp = await request.send();
+      request.files.add(http.MultipartFile(
+          'file', fileToSend.readStream!, fileToSend.size,
+          filename: fileToSend.name));
 
-    //------Read response
-    final result = await resp.stream.single;
-    final base64 = base64Encode(result);
+      final http.StreamedResponse resp = await request.send();
 
-    // Create the link with the file
-    final anchor =
-        html.AnchorElement(href: 'data:application/octet-stream;base64,$base64')
-          ..target = 'blank';
-    // add the name
-    anchor.download = 'BarcodeList.pdf';
+      //------Read response
+      final result = await resp.stream.single;
+      final base64 = base64Encode(result);
 
-    // trigger download
-    html.document.body!.append(anchor);
-    anchor.click();
-    anchor.remove();
+      // Create the link with the file
+      final anchor = html.AnchorElement(
+          href: 'data:application/octet-stream;base64,$base64')
+        ..target = 'blank';
+      // add the name
+      anchor.download = 'BarcodeList.pdf';
 
-    return true;
+      // trigger download
+      html.document.body!.append(anchor);
+      anchor.click();
+      anchor.remove();
+    } else {
+      // User canceled the picker
+    }
   }
 
-  static Future<bool> downloadTemplate() async {
+  static Future<void> downloadTemplate() async {
     html.window.open("http://127.0.0.1:5050/api/download-template", "_blank");
-    return true;
   }
 }
