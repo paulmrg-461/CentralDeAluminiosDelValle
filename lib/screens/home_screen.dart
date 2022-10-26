@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:barcode_generator/services/barcode_services.dart';
 import 'package:barcode_generator/shared/custom_button.dart';
 import 'package:file_picker/file_picker.dart';
@@ -21,9 +19,7 @@ class HomePage extends StatelessWidget {
             children: [
               CustomButton(
                 text: 'Descargar Plantilla',
-                onPressed: () {
-                  BarcodeServices.downloadTemplate();
-                },
+                onPressed: () => BarcodeServices.downloadTemplate(),
                 icon: Icons.cloud_download,
                 width: 220,
                 backgroundColor: Colors.transparent,
@@ -35,12 +31,10 @@ class HomePage extends StatelessWidget {
                 text: 'Cargar Plantilla',
                 onPressed: () async {
                   FilePickerResult? result =
-                      await FilePicker.platform.pickFiles();
+                      await FilePicker.platform.pickFiles(withReadStream: true);
 
                   if (result != null) {
-                    File file = File(result.files.single.path!);
-                    print(result.files.single.path);
-                    BarcodeServices.getBarcodeListPdf(file);
+                    BarcodeServices.getBarcodeListPdf(result.files.single);
                   } else {
                     // User canceled the picker
                   }

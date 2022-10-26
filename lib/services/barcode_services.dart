@@ -1,49 +1,42 @@
-import 'dart:io';
-import 'dart:ui';
+import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
 import 'dart:html' as html;
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
 
 class BarcodeServices {
-  static Dio dio = Dio();
-  static Future<bool> getBarcodeListPdf(File fileToSend) async {
-    // FormData formData = FormData.fromMap({"name": "Template.xlsx", "file": file});
-    final FormData formData = FormData.fromMap({
-      'name': 'wendux',
-      'age': 25,
-      'file': await MultipartFile.fromFile(fileToSend.path,
-          filename: 'Template.xlsx'),
-    });
-    final Response<dynamic> response = await dio
-        .post("http://127.0.0.1:5050/api/upload-excel-file", data: formData);
-    // final Directory dir = await getTemporaryDirectory();
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    print(appDocDir);
-    File file = File("${appDocDir.path}/BarcodeList.pdf");
-    final RandomAccessFile raf = file.openSync(mode: FileMode.write);
-    // response.data is List<int> type
-    raf.writeString(response.data);
-    // await raf.close();
+  static Future<bool> getBarcodeListPdf(PlatformFile fileToSend) async {
+    final request = http.MultipartRequest(
+      "POST",
+      Uri.parse("http://127.0.0.1:5050/api/upload-excel-file"),
+    );
+
+    request.files.add(http.MultipartFile(
+        'file', fileToSend.readStream!, fileToSend.size,
+        filename: fileToSend.name));
+
+    final http.StreamedResponse resp = await request.send();
+
+    //------Read response
+    final result = await resp.stream.single;
+    final base64 = base64Encode(result);
+
+    // Create the link with the file
+    final anchor =
+        html.AnchorElement(href: 'data:application/octet-stream;base64,$base64')
+          ..target = 'blank';
+    // add the name
+    anchor.download = 'BarcodeList.pdf';
+
+    // trigger download
+    html.document.body!.append(anchor);
+    anchor.click();
+    anchor.remove();
 
     return true;
   }
 
   static Future<bool> downloadTemplate() async {
-    kIsWeb
-        ? html.window
-            .open("http://127.0.0.1:5050/api/download-template", "_blank")
-        : downloadTemplateNativeDevice();
-    return true;
-  }
-
-  static Future<bool> downloadTemplateNativeDevice() async {
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    print(appDocDir.path);
-    final String finalPath = '${appDocDir.path}/Template.xlsx';
-    final Response<dynamic> response = await dio.download(
-        "http://127.0.0.1:5050/api/download-template", finalPath);
-
+    html.window.open("http://127.0.0.1:5050/api/download-template", "_blank");
     return true;
   }
 }

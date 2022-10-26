@@ -35,6 +35,7 @@ dependencies:
   firebase_core: ^2.0.0
   flutter:
     sdk: flutter
+  http: ^0.13.5
   path_provider: ^2.0.11
 
 dev_dependencies:
